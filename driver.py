@@ -1,8 +1,4 @@
 
-
-def special_print(checklist):
-    pass
-
 def display_instructions():
     print('Press A to add to list, R to remove, U to updated, and Q to quit')
 
