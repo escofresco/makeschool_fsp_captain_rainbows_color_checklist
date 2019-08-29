@@ -8,14 +8,13 @@ def display_instructions():
 
 def numerical_input_is_valid(idx, checklist):
     try:
-        str(idx)
+        int(idx)
     except:
         return False
-    finally:
-        return True
+    return int(idx) in range(len(checklist))
 
 def sanitize(input):
-    if ord(input) in range(ord('A'), ord('z')):
+    if ord(input) in range(ord('A'), ord('z')+1):
         return input.upper()
 
 def add(checklist):
@@ -24,13 +23,21 @@ def add(checklist):
 def remove(checklist):
     idx = input('Index of item to remove: ')
     if numerical_input_is_valid(idx, checklist):
-        del checklist[idx]
+        del checklist[int(idx)]
+    else:
+        print('That\'s not a valid input.')
 
-def update():
+def update(checklist):
     idx = input('Index of item to update: ')
-    val = input('Value you\'d like to update this item to')
     if numerical_input_is_valid(idx, checklist):
+        val = input('Value you\'d like to update this item to')
         checklist[idx] = val
+    else:
+        print('That\'s not a valid input.')
+
+def pretty_format(checklist):
+    for i, elm in enumerate(checklist):
+        yield f'{str(i):10} {elm}\n'
 
 def main():
     key_function_map = {
@@ -39,13 +46,12 @@ def main():
         'U': update,
     }
     checklist = list()
-    while True:
+    key = ''
+    while key != 'Q':
         key = sanitize(input())
-        if key == 'Q':
-            break
         key_function_map[key](checklist)
-        special_print(checklist)
+        print(''.join(list(pretty_format(checklist))))
 
-# if __name__ == '__main__':
-#     display_instructions()
-#     main()
+if __name__ == '__main__':
+    display_instructions()
+    main()
