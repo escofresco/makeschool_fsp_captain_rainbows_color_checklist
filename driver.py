@@ -60,9 +60,8 @@ def main():
         'U': update,
     }
     checklist = list()
-    key = ''
+    key = sanitize(input())
     while key != 'Q':
-        key = sanitize(input())
         try:
             key_function_map[key](checklist)
         except ValueError as e:
@@ -70,7 +69,7 @@ def main():
         else:
             print(''.join(list(pretty_format(checklist))))
         finally:
-            pass
+            key = sanitize(input())
 
 if __name__ == '__main__':
     print(instructions())
