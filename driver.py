@@ -1,6 +1,6 @@
 
-def display_instructions():
-    print('Press A to add to list, R to remove, U to update, and Q to quit')
+def instructions():
+    return 'Press A to add to list, R to remove, U to update, and Q to quit'
 
 def index(idx, checklist):
     '''
@@ -8,17 +8,22 @@ def index(idx, checklist):
     a valid index.
     '''
     try:
-        int(idx)
+        idx = int(idx)
     except:
         raise ValueError('Oh no! That\'s not an integer.')
     else:
-        if int(idx) in range(len(checklist)):
-            return True
-        raise IndexError(f'That index isn\'t valid for your checklist, which has a length of {len(checklist)}')
+        if idx in range(len(checklist)):
+            return idx
+        raise IndexError(
+                f'That index isn\'t valid for your checklist, \
+                which has a length of {len(checklist)}'
+            )
 
 def sanitize(input):
-    if ord(input) in range(ord('A'), ord('z')+1):
+    if len(input) == 1 and ord(input) in range(ord('A'), ord('z')+1):
         return input.upper()
+    raise ValueError(f'That\'s not a valid key. \
+                     Here\'s what you can enter: \n{instructions()}')
 
 def add(checklist):
     latent_item = input('Add to list: ')
@@ -30,9 +35,10 @@ def add(checklist):
 def remove(checklist):
     try:
         idx = index(input('Index of item to remove: '), checklist)
-        del checklist[idx]
     except (ValueError, IndexError) as e:
         raise e
+    else:
+        del checklist[idx]
 
 def update(checklist):
     try:
@@ -67,5 +73,5 @@ def main():
             pass
 
 if __name__ == '__main__':
-    display_instructions()
+    print(instructions())
     main()
