@@ -46,7 +46,7 @@ def update(checklist):
     except (ValueError, IndexError) as e:
         raise e
     else:
-        val = input('Value you\'d like to update this item to')
+        val = input('Value you\'d like to update this item to: ')
         checklist[idx] = val
 
 def pretty_format(checklist):
