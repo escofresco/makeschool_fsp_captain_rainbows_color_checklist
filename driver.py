@@ -29,14 +29,14 @@ def add(checklist):
 
 def remove(checklist):
     try:
-        idx = index(input('Index of item to remove: '))
+        idx = index(input('Index of item to remove: '), checklist)
         del checklist[idx]
     except (ValueError, IndexError) as e:
         raise e
 
 def update(checklist):
     try:
-        idx = index(input('Index of item to update: '))
+        idx = index(input('Index of item to update: '), checklist)
     except (ValueError, IndexError) as e:
         raise e
     else:
