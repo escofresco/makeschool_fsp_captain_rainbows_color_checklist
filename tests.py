@@ -13,12 +13,6 @@ class TestSuite(unittest.TestCase):
 
     VALID_CHECKLIST_ITEM = 'Clean the paper towels'
 
-    def test_valid_key_sanitization(self):
-        self.assertTrue(sanitize('k'))
-
-    def test_invalid_key_sanitization(self):
-        self.assertEqual(sanitize('!'), None)
-
     @mock.patch('builtins.input',
                 mock.MagicMock(return_value=VALID_CHECKLIST_ITEM))
     def test_valid_add(self):
@@ -33,12 +27,10 @@ class TestSuite(unittest.TestCase):
         with self.assertRaises(ValueError):
             add(test)
 
-    # @mock.patch('builtins.input', mock.MagicMock(return_value='0'))
-    # def test_valid_update(self):
-    #     test = list(['Rainbows are a hoax'])
-    #
-    #     update(test)
-    #     self.assertEqual(test[0], self.VALID_CHECKLIST_ITEM)
+    @mock.patch('builtins.input', mock.MagicMock(return_value='0'))
+    def test_valid_update(self):
+        pass
+
 
     def test_invalid_update(self):
         pass
@@ -50,22 +42,41 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(len(test), 0)
 
     @mock.patch('builtins.input', mock.MagicMock(return_value='0'))
-    def test_invalid_remove(self):
+    def test_invalid_index_remove(self):
         test = list()
         with self.assertRaises(IndexError):
             remove(test)
 
-    def test_sanitize(self):
-        pass
+    @mock.patch('builtins.input', mock.MagicMock(return_value='$'))
+    def test_invalid_character_remove(self):
+        test = list()
+        with self.assertRaises(ValueError):
+            remove(test)
 
-    def test_valid_numerical_input(self):
+    def test_valid_sanitize(self):
+        for char in ['a', 'r', 'u']:
+            self.assertEqual(sanitize(char), char.upper())
+
+    def test_invalid_sanitize(self):
+        for char in ['%', '3', 'aa', 'rrr', 'uuuuu']:
+            with self.assertRaises(ValueError):
+                sanitize(char)
+
+    def test_valid_index_input(self):
         checklist = [self.VALID_CHECKLIST_ITEM]
         self.assertEqual(index('0', checklist), 0)
 
-    # def test_invalid_numerical_input(self):
-    #     checklist = [1]
-    #     self.assertFalse(numerical_input_is_valid('$', checklist))
-    #     self.assertFalse(numerical_input_is_valid('d', checklist))
+    def test_invalid_index_input(self):
+        checklist = [self.VALID_CHECKLIST_ITEM]
+        for input in ['-1', '1']:
+            with self.assertRaises(IndexError):
+                index(input, checklist)
+
+    def test_invalid_char_for_index_input(self):
+        checklist = [self.VALID_CHECKLIST_ITEM]
+        for input in ['`!', ')(())()']:
+            with self.assertRaises(ValueError):
+                index(input, checklist)
 
 if __name__ == '__main__':
     unittest.main()
