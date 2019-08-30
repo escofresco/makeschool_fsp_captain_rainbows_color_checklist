@@ -6,8 +6,12 @@ def numerical_input_is_valid(idx, checklist):
     try:
         int(idx)
     except:
-        raise ValueError('')
-    return int(idx) in range(len(checklist))
+        raise ValueError('Oh no! That\'s not an integer.')
+    else:
+        if int(idx) in range(len(checklist)):
+            return True
+        raise IndexError(f'That index isn\'t valid for your checklist, which has a length of {len(checklist)}')
+    return False
 
 def sanitize(input):
     if ord(input) in range(ord('A'), ord('z')+1):
