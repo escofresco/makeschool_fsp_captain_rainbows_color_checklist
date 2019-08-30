@@ -1,12 +1,12 @@
 
 def display_instructions():
-    print('Press A to add to list, R to remove, U to updated, and Q to quit')
+    print('Press A to add to list, R to remove, U to update, and Q to quit')
 
 def numerical_input_is_valid(idx, checklist):
     try:
         int(idx)
     except:
-        return False
+        raise ValueError('')
     return int(idx) in range(len(checklist))
 
 def sanitize(input):
@@ -14,14 +14,18 @@ def sanitize(input):
         return input.upper()
 
 def add(checklist):
-    checklist.append(input('Add to list: '))
+    latent_item = input('Add to list: ')
+    if len(latent_item):
+        checklist.append(latent_item)
+    else:
+        raise ValueError('That\'s not a valid input.')
 
 def remove(checklist):
     idx = input('Index of item to remove: ')
     if numerical_input_is_valid(idx, checklist):
         del checklist[int(idx)]
     else:
-        print('That\'s not a valid input.')
+        raise ValueError('That\'s not a valid input.')
 
 def update(checklist):
     idx = input('Index of item to update: ')
@@ -29,7 +33,7 @@ def update(checklist):
         val = input('Value you\'d like to update this item to')
         checklist[idx] = val
     else:
-        print('That\'s not a valid input.')
+        raise ValueError('That\'s not a valid input.')
 
 def pretty_format(checklist):
     for i, elm in enumerate(checklist):
@@ -45,8 +49,14 @@ def main():
     key = ''
     while key != 'Q':
         key = sanitize(input())
-        key_function_map[key](checklist)
-        print(''.join(list(pretty_format(checklist))))
+        try:
+            key_function_map[key](checklist)
+        except ValueError as e:
+            print(e)
+        else:
+            print(''.join(list(pretty_format(checklist))))
+        finally:
+            pass
 
 if __name__ == '__main__':
     display_instructions()
