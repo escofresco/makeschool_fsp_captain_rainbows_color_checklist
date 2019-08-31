@@ -62,7 +62,7 @@ def update(checklist):
         raise e
     else:
         val = input('Value you\'d like to update this item to: ')
-        checklist[idx] = val
+        checklist[idx]['content'] = val
 
 def check_switch(checklist):
     try:
