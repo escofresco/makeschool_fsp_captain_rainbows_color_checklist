@@ -16,8 +16,21 @@ ANSI_CODES = {
 def resize_handler(signum, frame):
     print(shell_dims())
 
+def whitespace_count_for_padding(string, width):
+    '''
+    Calculates remaining whitespace of last line of display as it would be
+    displayed on terminal. Returns 0 if string perfectly fits within width
+    '''
+    lines = len(string) // width
+    width_of_last_line = len(string) - lines*width
+    return width-width_of_last_line if width_of_last_line > 0 else 0
+
 def cprint(string):
     #print(colored_string('asdf'))
+    string = string.strip() # Prep for whitespace padding
+    height, width = shell_dims()
+    print(colored_string(string +
+                         ' '*whitespace_count_for_padding(string, width)))
 
 def shell_dims():
     '''
@@ -25,16 +38,16 @@ def shell_dims():
 
     returns: (height, width)
     '''
-    # thanks @brokkr
+    # partial thanks @brokkr
     # https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python
-    return os.popen('stty size', 'r').read().split()
+    return tuple(map(int, os.popen('stty size', 'r').read().split()))
 
 def colored_string(string, foreground='30', background='47'):
     # thanks @jonaszk
     # https://medium.com/@jonaszk/craft-a-progress-bar-in-python-ece63136958
     return (ANSI_CODES['prefix']+
             f'[1;{foreground};{background}m'+
-            string.strip()+
+            string+
             ANSI_CODES['reset'])
 
 def instructions():
@@ -106,7 +119,6 @@ def update(checklist):
         checklist[idx]['content'] = val
 
         # Temporarily xor is_complete to handle strikethrough for clean text
-        # that needs strikethrough
         checklist[idx]['is_complete'] ^= 1
         checklist[idx]['content'] = strikethrough(idx, checklist)
         checklist[idx]['is_complete'] ^= 1 # Reverse xor
