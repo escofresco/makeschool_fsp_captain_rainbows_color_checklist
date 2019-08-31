@@ -74,8 +74,10 @@ def check_switch(checklist):
         checklist[idx]['is_complete'] ^= 1
 
 def pretty_format(checklist):
+    CHECKMARK = '\u2714'
     for i, elm in enumerate(checklist):
-        yield f'{str(i):10} {elm}\n'
+        yield f'{CHECKMARK if elm['is_complete'] else '':1} \
+                {str(i):10} {elm['content']}\n'
 
 def main():
     print(instructions())
