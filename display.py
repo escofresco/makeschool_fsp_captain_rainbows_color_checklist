@@ -25,7 +25,8 @@ class Display(object):
                 self.lines[self.next_available_line][col] = char
 
     def render(self):
-        pass
+        for line in self.lines:
+            print(colored_string(''.join(line)))
 
     def colored_string(string, foreground='30', background='47'):
         # thanks @jonaszk
