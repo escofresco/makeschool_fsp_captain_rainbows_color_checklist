@@ -38,7 +38,7 @@ def strikethrough(i, checklist):
     STRIKETHROUGH = '\u0336'
     if checklist[i]['is_complete']:
         return ''.join(checklist[i]['content'].split(STRIKETHROUGH))
-    return STRIKETHROUGH.join(checklist[i]['content'])
+    return STRIKETHROUGH.join(checklist[i]['content'])+STRIKETHROUGH
 
 def add(checklist):
     latent_item = input('Add to list: ')
