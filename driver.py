@@ -1,11 +1,14 @@
+from sys import exit
 
 def instructions():
     return 'Press A to add to list, R to remove, U to update, and Q to quit'
 
 def index(idx, checklist):
     '''
-    Takes a string as input. Raises exceptions if that string doesn't represent
+    Takes a string as input. Raises exceptions if the string doesn't represent
     a valid index.
+
+    returns: int
     '''
     try:
         idx = int(idx)
@@ -54,23 +57,23 @@ def pretty_format(checklist):
         yield f'{str(i):10} {elm}\n'
 
 def main():
+    print(instructions())
     key_function_map = {
         'A': add,
         'R': remove,
         'U': update,
+        'C': check_switch,
+        'Q': lambda x: exit(),
     }
     checklist = list()
-    key = sanitize(input())
-    while key != 'Q':
+    while True:
+        key = sanitize(input())
         try:
             key_function_map[key](checklist)
         except ValueError as e:
             print(e)
         else:
             print(''.join(list(pretty_format(checklist))))
-        finally:
-            key = sanitize(input())
 
 if __name__ == '__main__':
-    print(instructions())
     main()
