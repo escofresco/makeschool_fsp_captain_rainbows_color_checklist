@@ -10,10 +10,13 @@ class Display(object):
         }
         self.height = height
         self.width = width
-        self.lines = [[' ' for _ in range(width)] for _ in range(height)]
+        self.lines = self.initial_lines()
         self.next_available_line = 0
         if len(string):
             self.add_string(string)
+
+    def initial_lines(self):
+        return [[' ' for _ in range(width)] for _ in range(height)]
 
     def add_string(self, string):
         string = string.strip()
