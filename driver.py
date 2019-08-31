@@ -28,6 +28,18 @@ def sanitize(input):
     raise ValueError(f'That\'s not a valid key. \
                      Here\'s what you can enter: \n{instructions()}')
 
+def strikethrough(i, checklist):
+    '''
+    Removes strikethrough if item at index i is marked complete, otherwise adds
+    strikethrough.
+
+    returns: str, the affected string at index i
+    '''
+    STRIKETHROUGH = '\u0336'
+    if checklist[i]['is_complete']:
+        return ''.join(checklist[i]['content'].split(STRIKETHROUGH))
+    return STRIKETHROUGH.join(checklist[i]['content'])
+
 def add(checklist):
     latent_item = input('Add to list: ')
     if len(latent_item):
@@ -58,8 +70,8 @@ def check_switch(checklist):
     except (ValueError, IndexError) as e:
         raise e
     else:
-        checklist[idx]['content'] = strikethrough(checklist[idx]['content'])
-        checklist[idx]['complete_flag'] ^= 1
+        checklist[idx]['content'] = strikethrough(idx, checklist)
+        checklist[idx]['is_complete'] ^= 1
 
 def pretty_format(checklist):
     for i, elm in enumerate(checklist):
