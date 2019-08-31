@@ -52,6 +52,15 @@ def update(checklist):
         val = input('Value you\'d like to update this item to: ')
         checklist[idx] = val
 
+def check_switch(checklist):
+    try:
+        idx = index(input('Index of item to check or uncheck: '), checklist)
+    except (ValueError, IndexError) as e:
+        raise e
+    else:
+        checklist[idx]['content'] = strikethrough(checklist[idx]['content'])
+        checklist[idx]['complete_flag'] ^= 1
+
 def pretty_format(checklist):
     for i, elm in enumerate(checklist):
         yield f'{str(i):10} {elm}\n'
