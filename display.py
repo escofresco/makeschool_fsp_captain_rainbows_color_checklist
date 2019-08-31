@@ -30,7 +30,7 @@ class Display(object):
     def colored_string(string, foreground='30', background='47'):
         # thanks @jonaszk
         # https://medium.com/@jonaszk/craft-a-progress-bar-in-python-ece63136958
-        return (ANSI_CODES['prefix']+
+        return (self.ANSI_CODES['prefix']+
                 f'[1;{foreground};{background}m'+
                 string+
-                ANSI_CODES['reset'])
+                self.ANSI_CODES['reset'])
