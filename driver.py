@@ -1,12 +1,47 @@
 import os
-from sys import exit
+from signal import (signal,
+                    SIGWINCH)
+from sys import (exit, stdout)
+
+ROY_G_BIV_TO_ANSI_MAP = {
+
+}
+
+ANSI_CODES = {
+    'prefix': '\x1b',
+    'reset': '\x1b[0m',
+}
+
+def resize_handler(signum, frame):
+    print(shell_dims())
+
+def cprint(string):
+    print(colored_string('asdf'))
+
+def shell_dims():
+    '''
+    Get the dimensions of terminal.
+
+    returns: (height, width)
+    '''
+    # thanks @brokkr
+    # https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python
+    return os.popen('stty size', 'r').read().split()
+
+def colored_string(string, foreground='30', background='47'):
+    # thanks @jonaszk
+    # https://medium.com/@jonaszk/craft-a-progress-bar-in-python-ece63136958
+    return (ANSI_CODES['prefix']+
+            f'[1;{foreground};{background}m'+
+            string.strip()+
+            ANSI_CODES['reset'])
 
 def instructions():
     return 'Press A to add to list, R to remove, C to check or uncheck, U to update, and Q to quit'
 
 def index(idx, checklist):
     '''
-    Takes a string as input. Raises exceptions if the string doesn't represent
+    Take a string as input. Raises exceptions if the string doesn't represent
     a valid index.
 
     returns: int
@@ -19,11 +54,12 @@ def index(idx, checklist):
         if idx in range(len(checklist)):
             return idx
         raise IndexError(
-                f'That index isn\'t valid for your checklist, \
-                which has a length of {len(checklist)}'
+                f'That index isn\'t valid for your checklist, '
+                f'which has a length of {len(checklist)}'
             )
 
 def sanitize(input):
+    input = input.strip()
     if len(input) == 1 and ord(input) in range(ord('A'), ord('z')+1):
         return input.upper()
     raise ValueError(f'That\'s not a valid key. \
@@ -31,7 +67,7 @@ def sanitize(input):
 
 def strikethrough(i, checklist):
     '''
-    Removes strikethrough if item at index i is marked complete, otherwise adds
+    Remove strikethrough if item at index i is marked complete, otherwise adds
     strikethrough.
 
     returns: str, the affected string at index i
@@ -94,9 +130,20 @@ def clear_terminal():
     # https://stackoverflow.com/questions/2084508/clear-terminal-in-python
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def display_header(checklist):
+    cprint(instructions()+
+          '\n'+
+          (''.join(list(pretty_format(checklist)))))
+
 def main():
+
+    # Add window resize listener
+    # thanks @Atlantic777
+    # https://docs.python.org/3/library/signal.html
+    signal(SIGWINCH, resize_handler)
+
     clear_terminal()
-    print(instructions())
+    cprint(instructions())
     key_function_map = {
         'A': add,
         'R': remove,
@@ -109,12 +156,13 @@ def main():
         key = sanitize(input())
         try:
             key_function_map[key](checklist)
-        except ValueError as e:
-            print(e)
+        except Exception as e:
+            clear_terminal()
+            display_header(checklist)
+            cprint(e)
         else:
             clear_terminal()
-            print(instructions())
-            print(''.join(list(pretty_format(checklist))))
+            display_header(checklist)
 
 if __name__ == '__main__':
     main()
