@@ -1,7 +1,7 @@
 from sys import exit
 
 def instructions():
-    return 'Press A to add to list, R to remove, U to update, and Q to quit'
+    return 'Press A to add to list, R to remove, C to check or uncheck, U to update, and Q to quit'
 
 def index(idx, checklist):
     '''
@@ -77,10 +77,9 @@ def check_switch(checklist):
         checklist[idx]['is_complete'] ^= 1
 
 def pretty_format(checklist):
-    CHECKMARK = '\u2714'
     for i, elm in enumerate(checklist):
-        yield f'{CHECKMARK if elm['is_complete'] else '':1} \
-                {str(i):10} {elm['content']}\n'
+        CHECKMARK = '\u2714' if elm["is_complete"] else ''
+        yield f'{CHECKMARK:1} {str(i):10} {elm["content"]}\n'
 
 def main():
     print(instructions())
