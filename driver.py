@@ -1,3 +1,4 @@
+import os
 from sys import exit
 
 def instructions():
@@ -67,6 +68,13 @@ def update(checklist):
         val = input('Value you\'d like to update this item to: ')
         checklist[idx]['content'] = val
 
+        # Temporarily xor is_complete to handle strikethrough for clean text
+        # that needs strikethrough
+        checklist[idx]['is_complete'] ^= 1
+        checklist[idx]['content'] = strikethrough(idx, checklist)
+        checklist[idx]['is_complete'] ^= 1 # Reverse xor
+
+
 def check_switch(checklist):
     try:
         idx = index(input('Index of item to check or uncheck: '), checklist)
@@ -81,7 +89,13 @@ def pretty_format(checklist):
         CHECKMARK = '\u2714' if elm["is_complete"] else ''
         yield f'{CHECKMARK:1} {str(i):10} {elm["content"]}\n'
 
+def clear_terminal():
+    # thanks @poke
+    # https://stackoverflow.com/questions/2084508/clear-terminal-in-python
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def main():
+    clear_terminal()
     print(instructions())
     key_function_map = {
         'A': add,
@@ -98,6 +112,8 @@ def main():
         except ValueError as e:
             print(e)
         else:
+            clear_terminal()
+            print(instructions())
             print(''.join(list(pretty_format(checklist))))
 
 if __name__ == '__main__':
