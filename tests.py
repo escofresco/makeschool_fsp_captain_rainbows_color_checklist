@@ -1,18 +1,30 @@
+from copy import deepcopy
 from driver import *
 import unittest
 from unittest import mock
 
 class TestSuite(unittest.TestCase):
 
-    VALID_CHECKLIST_ITEM = 'Clean the paper towels'
+    STRIKETHROUGH = '\u0336'
+    VALID_CHECKLIST_ITEM = 'Drive the wheels'
+    VALID_INCOMPLETE_CHECKLIST_ITEM0 = 'Clean the paper towels'
+    VALID_COMPLETE_CHECKLIST_ITEM1 = (STRIKETHROUGH.join('Walk the leash')+
+                                      STRIKETHROUGH)
+    STATIC_CHECKLIST = [{
+        'content': VALID_INCOMPLETE_CHECKLIST_ITEM1,
+        'is_complete': False,
+    }, {
+        'content': VALID_COMPLETE_CHECKLIST_ITEM1,
+        'is_complete': True,
+    }]
+    editable_checklist = deepcopy(DEFAULT_CHECKLIST)
 
     @mock.patch('builtins.input',
                 mock.MagicMock(return_value=VALID_CHECKLIST_ITEM))
     def test_valid_add(self):
-        test = list()
-        add(test)
-        self.assertEqual(len(test), 1)
-        self.assertEqual(test[0], self.VALID_CHECKLIST_ITEM)
+        add(editable_checklist)
+        self.assertEqual(len(editable_checklist), 3)
+        self.assertEqual(test[-1]['content'], self.VALID_CHECKLIST_ITEM)
 
     @mock.patch('builtins.input', mock.MagicMock(return_value=''))
     def test_invalid_add(self):
