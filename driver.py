@@ -3,16 +3,6 @@ from signal import (signal,
                     SIGWINCH)
 from sys import (exit, stdout)
 
-ROY_G_BIV_TO_ANSI_MAP = {
-
-}
-
-ANSI_CODES = {
-    'prefix': '\x1b',
-    'reset': '\x1b[0m',
-    **ROY_G_BIV_TO_ANSI_MAP
-}
-
 def resize_handler(signum, frame):
     print(shell_dims())
 
@@ -29,8 +19,8 @@ def cprint(string):
     #print(colored_string('asdf'))
     string = string.strip() # Prep for whitespace padding
     height, width = shell_dims()
-    print(colored_string(string +
-                         ' '*whitespace_count_for_padding(string, width)))
+    # print(colored_string(string +
+    #                      ' '*whitespace_count_for_padding(string, width)))
 
 def shell_dims():
     '''
@@ -41,14 +31,6 @@ def shell_dims():
     # partial thanks @brokkr
     # https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python
     return tuple(map(int, os.popen('stty size', 'r').read().split()))
-
-def colored_string(string, foreground='30', background='47'):
-    # thanks @jonaszk
-    # https://medium.com/@jonaszk/craft-a-progress-bar-in-python-ece63136958
-    return (ANSI_CODES['prefix']+
-            f'[1;{foreground};{background}m'+
-            string+
-            ANSI_CODES['reset'])
 
 def instructions():
     return 'Press A to add to list, R to remove, C to check or uncheck, U to update, and Q to quit'
