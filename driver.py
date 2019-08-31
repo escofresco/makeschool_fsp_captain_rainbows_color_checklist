@@ -43,7 +43,10 @@ def strikethrough(i, checklist):
 def add(checklist):
     latent_item = input('Add to list: ')
     if len(latent_item):
-        checklist.append(latent_item)
+        checklist.append({
+            'content': latent_item,
+            'is_complete': False,
+        })
     else:
         raise ValueError('That\'s not a valid input.')
 
