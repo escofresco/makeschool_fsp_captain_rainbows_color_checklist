@@ -2,13 +2,6 @@ from driver import *
 import unittest
 from unittest import mock
 
-# def decorator(arg):
-#     def real_decorator(func):
-#         def wrapper(*args, **kwargs):
-#             mock.patch('builtins.input', mock.MagicMock(return_value=*args))()
-#         return wrapper
-#     return real_decorator
-
 class TestSuite(unittest.TestCase):
 
     VALID_CHECKLIST_ITEM = 'Clean the paper towels'
