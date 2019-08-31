@@ -10,13 +10,14 @@ ROY_G_BIV_TO_ANSI_MAP = {
 ANSI_CODES = {
     'prefix': '\x1b',
     'reset': '\x1b[0m',
+    **ROY_G_BIV_TO_ANSI_MAP
 }
 
 def resize_handler(signum, frame):
     print(shell_dims())
 
 def cprint(string):
-    print(colored_string('asdf'))
+    #print(colored_string('asdf'))
 
 def shell_dims():
     '''
