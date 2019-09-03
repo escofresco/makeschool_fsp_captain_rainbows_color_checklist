@@ -1,46 +1,20 @@
-import os
+from display import Display
+from getpass import getpass
 from signal import (signal,
                     SIGWINCH)
 from sys import (exit, stdout)
 
-def resize_handler(signum, frame):
-    print(shell_dims())
 
-def whitespace_count_for_padding(string, width):
-    '''
-    Calculates remaining whitespace of last line of display as it would be
-    displayed on terminal. Returns 0 if string perfectly fits within width
-    '''
-    lines = len(string) // width
-    width_of_last_line = len(string) - lines*width
-    return width-width_of_last_line if width_of_last_line > 0 else 0
-
-def cprint(string):
-    #print(colored_string('asdf'))
-    string = string.strip() # Prep for whitespace padding
-    height, width = shell_dims()
-    # print(colored_string(string +
-    #                      ' '*whitespace_count_for_padding(string, width)))
-
-def shell_dims():
-    '''
-    Get the dimensions of terminal.
-
-    returns: (height, width)
-    '''
-    # partial thanks @brokkr
-    # https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python
-    return tuple(map(int, os.popen('stty size', 'r').read().split()))
+def cprint(string, display):
+    display.print(str(string).strip())
 
 def instructions():
-    return 'Press A to add to list, R to remove, C to check or uncheck, U to update, and Q to quit'
+    return 'Press A to add to list, R to remove, C to check/uncheck, U to update, and Q to quit'
 
-def index(idx, checklist):
+def index(idx, checklist) -> int:
     '''
-    Take a string as input. Raises exceptions if the string doesn't represent
+    Take a string as input. Raise exceptions if the string doesn't represent
     a valid index.
-
-    returns: int
     '''
     try:
         idx = int(idx)
@@ -54,36 +28,34 @@ def index(idx, checklist):
                 f'which has a length of {len(checklist)}'
             )
 
-def sanitize(input):
+def sanitize(input) -> str:
     input = input.strip()
     if len(input) == 1 and ord(input) in range(ord('A'), ord('z')+1):
         return input.upper()
-    raise ValueError(f'That\'s not a valid key. \
-                     Here\'s what you can enter: \n{instructions()}')
+    raise ValueError(f'That\'s not a valid key.'
+                     f'Here\'s what you can enter: \n{instructions()}')
 
-def strikethrough(i, checklist):
+def strikethrough(i, checklist) -> str:
     '''
-    Remove strikethrough if item at index i is marked complete, otherwise adds
+    Remove strikethrough if item at index i is marked complete, otherwise add
     strikethrough.
-
-    returns: str, the affected string at index i
     '''
     STRIKETHROUGH = '\u0336'
     if checklist[i]['is_complete']:
         return ''.join(checklist[i]['content'].split(STRIKETHROUGH))
     return STRIKETHROUGH.join(checklist[i]['content'])+STRIKETHROUGH
 
-def add(checklist):
+def create(checklist) -> None:
     latent_item = input('Add to list: ')
     if len(latent_item):
         checklist.append({
-            'content': latent_item,
+            'content': latent_item.strip(),
             'is_complete': False,
         })
     else:
         raise ValueError('That\'s not a valid input.')
 
-def remove(checklist):
+def destroy(checklist) -> None:
     try:
         idx = index(input('Index of item to remove: '), checklist)
     except (ValueError, IndexError) as e:
@@ -91,7 +63,7 @@ def remove(checklist):
     else:
         del checklist[idx]
 
-def update(checklist):
+def update(checklist) -> None:
     try:
         idx = index(input('Index of item to update: '), checklist)
     except (ValueError, IndexError) as e:
@@ -107,6 +79,10 @@ def update(checklist):
 
 
 def check_switch(checklist):
+    '''
+    Apply justified checkmark and strikethrough content if is_complete flag
+    is False, otherwise remove checkmark and strikethrough
+    '''
     try:
         idx = index(input('Index of item to check or uncheck: '), checklist)
     except (ValueError, IndexError) as e:
@@ -120,28 +96,25 @@ def pretty_format(checklist):
         CHECKMARK = '\u2714' if elm["is_complete"] else ''
         yield f'{CHECKMARK:1} {str(i):10} {elm["content"]}\n'
 
-def clear_terminal():
-    # thanks @poke
-    # https://stackoverflow.com/questions/2084508/clear-terminal-in-python
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def display_header(checklist):
+def display_header(checklist, display):
     cprint(instructions()+
           '\n'+
-          (''.join(list(pretty_format(checklist)))))
+          (''.join(list(pretty_format(checklist)))),
+          display)
 
 def main():
+    display = Display()
 
     # Add window resize listener
     # thanks @Atlantic777
     # https://docs.python.org/3/library/signal.html
-    signal(SIGWINCH, resize_handler)
+    signal(SIGWINCH, display.resize_handler)
 
-    clear_terminal()
-    cprint(instructions())
+    display.clear()
+    cprint(instructions(), display)
     key_function_map = {
-        'A': add,
-        'R': remove,
+        'A': create,
+        'R': destroy,
         'U': update,
         'C': check_switch,
         'Q': lambda x: exit(),
@@ -149,15 +122,16 @@ def main():
     checklist = list()
     while True:
         key = sanitize(input())
+        # key = getpass(prompt="")
         try:
             key_function_map[key](checklist)
         except Exception as e:
-            clear_terminal()
-            display_header(checklist)
-            cprint(e)
+            display.clear()
+            display_header(checklist, display)
+            cprint(e, display)
         else:
-            clear_terminal()
-            display_header(checklist)
+            display.clear()
+            display_header(checklist, display)
 
 if __name__ == '__main__':
     main()
